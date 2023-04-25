@@ -7,10 +7,10 @@ SRCDIR=src
 BINDIR=bin
 $(BINDIR)/%.class:$(SRCDIR)/%.java
 $(JAVAC) -d $(BINDIR)/ -cp $(BINDIR) $<
-CLASSES=GraphException.class Edge.class Path.class Vertex.class Graph.class
+CLASSES=GraphException.class Edge.class Path.class Vertex.class Graph.class GraphExperiment.class
 CLASS_FILES=$(CLASSES:%.class=$(BINDIR)/%.class)
 default: $(CLASS_FILES)
 clean:
 rm $(BINDIR)/*.class
 run: $(CLASS_FILES)
-java -cp bin Graph
+java -cp bin GraphExperiment
