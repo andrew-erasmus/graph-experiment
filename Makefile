@@ -1,6 +1,7 @@
 # Makefile for the Graph assignment program 
 # Andrew Erasmus
 # 25 April 2023
+
 JAVAC=/usr/bin/javac
 JAVA=/usr/bin/java
 .SUFFIXES: .java .class
