@@ -3,7 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
@@ -38,6 +41,7 @@ public class Graph
 {
     public static final double INFINITY = Double.MAX_VALUE;
     private Map<String,Vertex> vertexMap = new HashMap<String,Vertex>( );
+    public static int opCount = 0;
 
     /**
      * Add a new edge to the graph.
@@ -158,11 +162,16 @@ public class Graph
         int nodesSeen = 0;
         while( !pq.isEmpty( ) && nodesSeen < vertexMap.size( ) )
         {
+            opCount += (int)Math.log(pq.size())/Math.log(2);
             Path vrec = pq.remove( );
             Vertex v = vrec.dest;
+            
             if( v.scratch != 0 )  // already processed v
                 continue;
+              
                 
+            // vertex is being processed
+            opCount++;
             v.scratch = 1;
             nodesSeen++;
 
@@ -174,137 +183,34 @@ public class Graph
                 if( cvw < 0 )
                     throw new GraphException( "Graph has negative edges" );
                     
-                if( w.dist > v.dist + cvw )
+                //edge is being processed
+                opCount++;    
+                if( w.dist > v.dist + cvw ) 
                 {
                     w.dist = v.dist +cvw;
                     w.prev = v;
                     pq.add( new Path( w, w.dist ) );
+                    opCount += (int)Math.log(pq.size())/Math.log(2);
                 }
             }
         }
     }
 
-    /**
-     * Single-source negative-weighted shortest-path algorithm.
-     * Bellman-Ford Algorithm
-     */
-    public void negative( String startName )
-    {
-        clearAll( ); 
-
-        Vertex start = vertexMap.get( startName );
-        if( start == null )
-            throw new NoSuchElementException( "Start vertex not found" );
-
-        Queue<Vertex> q = new LinkedList<Vertex>( );
-        q.add( start ); start.dist = 0; start.scratch++;
-
-        while( !q.isEmpty( ) )
-        {
-            Vertex v = q.remove( );
-            if( v.scratch++ > 2 * vertexMap.size( ) )
-                throw new GraphException( "Negative cycle detected" );
-
-            for( Edge e : v.adj )
-            {
-                Vertex w = e.dest;
-                double cvw = e.cost;
-                
-                if( w.dist > v.dist + cvw )
-                {
-                    w.dist = v.dist + cvw;
-                    w.prev = v;
-                      // Enqueue only if not already on the queue
-                    if( w.scratch++ % 2 == 0 )
-                        q.add( w );
-                    else
-                        w.scratch--;  // undo the enqueue increment    
-                }
-            }
-        }
-    }
-
-    /**
-     * Single-source negative-weighted acyclic-graph shortest-path algorithm.
-     */
-    public void acyclic( String startName )
-    {
-        Vertex start = vertexMap.get( startName );
-        if( start == null )
-            throw new NoSuchElementException( "Start vertex not found" );
-
-        clearAll( ); 
-        Queue<Vertex> q = new LinkedList<Vertex>( );
-        start.dist = 0;
-        
-          // Compute the indegrees
-		Collection<Vertex> vertexSet = vertexMap.values( );
-        for( Vertex v : vertexSet )
-            for( Edge e : v.adj )
-                e.dest.scratch++;
-            
-          // Enqueue vertices of indegree zero
-        for( Vertex v : vertexSet )
-            if( v.scratch == 0 )
-                q.add( v );
-       
-        int iterations;
-        for( iterations = 0; !q.isEmpty( ); iterations++ )
-        {
-            Vertex v = q.remove( );
-
-            for( Edge e : v.adj )
-            {
-                Vertex w = e.dest;
-                double cvw = e.cost;
-                
-                if( --w.scratch == 0 )
-                    q.add( w );
-                
-                if( v.dist == INFINITY )
-                    continue;    
-                
-                if( w.dist > v.dist + cvw )
-                {
-                    w.dist = v.dist + cvw;
-                    w.prev = v;
-                }
-            }
-        }
-        
-        if( iterations != vertexMap.size( ) )
-            throw new GraphException( "Graph has a cycle!" );
-    }
-
+   
     /**
      * Process a request; return false if end of file.
      */
-    public static boolean processRequest( Scanner in, Graph g )
+    public static boolean processRequest( String inSource, String inDest, Graph g )
     {
         try
         {
-            System.out.print( "Enter start node:" );
-            String startName = in.nextLine( );
-
-            System.out.print( "Enter destination node:" );
-            String destName = in.nextLine( );
-
-            System.out.print( "Enter algorithm (u, d, n, a ): " );
-            String alg = in.nextLine( );
-            
-            if( alg.equals( "u" ) )
-                g.unweighted( startName );
-            else if( alg.equals( "d" ) )    
-            {
-                g.dijkstra( startName );
-                g.printPath( destName );
-            }
-            else if( alg.equals( "n" ) )
-                g.negative( startName );
-            else if( alg.equals( "a" ) )
-                g.acyclic( startName );
-                    
+            String startName = inSource;
+            String destName = inDest;
+            g.dijkstra( startName );
             g.printPath( destName );
+            System.out.println("Number of operations: "+opCount);
+                    
+            //g.printPath( destName );
         }
         catch( NoSuchElementException e )
           { return false; }
@@ -325,18 +231,30 @@ public class Graph
     public static void main( String [ ] args )
     {
         Graph g = new Graph( );
+        String sourceNode="";
+        String destNode="";
+        int lineCount=0;
         try
         {   	
             FileReader fin = new FileReader(args[0]);
+            FileReader finForNodes = new FileReader(args[0]);
             Scanner graphFile = new Scanner( fin );
+            Scanner firstLine = new Scanner( finForNodes );
 
             // Read the edges and insert
             String line;
+            String nodes = firstLine.nextLine();
+            String[] splitLine = nodes.split(" ");
+            sourceNode=splitLine[0];
+            destNode=splitLine[1];
+            
+
             while( graphFile.hasNextLine( ) )
             {
                 line = graphFile.nextLine( );
+                lineCount++;
                 StringTokenizer st = new StringTokenizer( line );
-
+                
                 try
                 {
                     if( st.countTokens( ) != 3 )
@@ -352,6 +270,7 @@ public class Graph
                 catch( NumberFormatException e )
                   { System.err.println( "Skipping ill-formatted line " + line ); }
              }
+
          }
          catch( IOException e )
            { System.err.println( e ); }
@@ -359,8 +278,16 @@ public class Graph
          System.out.println( "File read..." );
          System.out.println( g.vertexMap.size( ) + " vertices" );
 
-         Scanner in = new Scanner( System.in );
-         while( processRequest( in, g ) )
-             ;
+         //get the first edge of the file to be the source and destination node to calculate shortest distances
+         // edits the program so that there is no user input
+         processRequest(sourceNode, destNode, g );
+         try{
+            PrintWriter output=new PrintWriter(new FileWriter("../data/results.txt", true));
+            output.println(g.vertexMap.size( )+" "+(lineCount-1)+" "+opCount);
+            output.close();
+         }catch(IOException e){
+            e.printStackTrace();
+         }
+         
     }
 }
