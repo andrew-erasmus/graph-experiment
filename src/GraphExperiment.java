@@ -1,35 +1,39 @@
-import java.util.Scanner;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.File;
 
 public class GraphExperiment{
 
     public static void main(String[] args) throws IOException, InterruptedException{
-           
-        for (int i=0;i<25;i++) {
-            String filename="Dataset"+i+".txt";
+                   
+
+        File currentDir = new File(".");
+        File dataDir = new File(currentDir.getParent(), "data");
+        
+        for (int i = 1; i < 26; i++) {
+            String filename = "Dataset" + i + ".txt";
+            String filePath = new File(dataDir, filename).getAbsolutePath();
+            Graph.main(new String[] { filePath });
+        }
+        
+            // // create the process builder with the java command and its arguments
+            // String[] command = {"java", "Graph", filename};
+            // ProcessBuilder pb = new ProcessBuilder(command);
+
+            // // start the process and wait for it to finish
+            // Process process = pb.start();
+            // process.waitFor();
+
+            // // read the output from the process
+            // BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            // String line;
+            // while ((line = reader.readLine()) != null) {
+            //     System.out.println(line);
+            // }
+
             
-            // create the process builder with the java command and its arguments
-            String[] command = {"java", "Graph", filename};
-            ProcessBuilder pb = new ProcessBuilder(command);
-
-            // start the process and wait for it to finish
-            Process process = pb.start();
-            process.waitFor();
-
-            // read the output from the process
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-            }
         }
 
-    }
-
-    public static void writeToFile(){
-
+    
     }
 
 
@@ -52,4 +56,3 @@ public class GraphExperiment{
      */
 
 
-}

@@ -18,6 +18,7 @@ import java.util.NoSuchElementException;
 import java.util.PriorityQueue;
 import java.util.Scanner;
 import java.util.StringTokenizer;
+import java.io.File;
 
 
 // Graph class: evaluate shortest paths.
@@ -282,8 +283,12 @@ public class Graph
          // edits the program so that there is no user input
          processRequest(sourceNode, destNode, g );
          try{
-            PrintWriter output=new PrintWriter(new FileWriter("../data/results.txt", true));
-            output.println(g.vertexMap.size( )+" "+(lineCount-1)+" "+opCount);
+            File currentDir = new File(".");
+            File dataDir = new File(currentDir.getParent(), "data");
+            File outputFile = new File(dataDir, "results.txt");
+            
+            PrintWriter output = new PrintWriter(new FileWriter(outputFile.getAbsolutePath(), true));
+            output.println(g.vertexMap.size() + " " + (lineCount - 1) + " " + opCount);
             output.close();
          }catch(IOException e){
             e.printStackTrace();

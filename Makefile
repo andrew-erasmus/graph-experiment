@@ -15,7 +15,7 @@ CLASSES=Vertex.class \
 		GraphException.class \
 		Graph.class \
 		DataGenerator.class \
-		GraphExperiment
+		GraphExperiment.class
 CLASS_FILES=$(CLASSES:%.class=$(BINDIR)/%.class)
 default: $(CLASS_FILES)
 clean:
