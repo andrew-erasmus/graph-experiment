@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.HashMap;
+import java.io.File;
 
 public class DataGenerator {
 
@@ -22,7 +23,10 @@ public class DataGenerator {
             int numE = input.nextInt();
             input.nextLine();
 
-            PrintWriter fileOut = new PrintWriter(new FileWriter(filename, false));
+            File currentDir = new File(".");
+            File dataDir = new File(currentDir.getParent(), "data");
+            String filePath = new File(dataDir, filename).getAbsolutePath();
+            PrintWriter fileOut = new PrintWriter(new FileWriter(filePath, false));
             String output = "";
 
             HashMap<String, Integer> edges = new HashMap<String, Integer>();

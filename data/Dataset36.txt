@@ -1,0 +1,21 @@
+Node24 Node27 6
+Node16 Node28 5
+Node16 Node27 3
+Node2 Node26 7
+Node25 Node26 6
+Node8 Node10 8
+Node16 Node18 1
+Node2 Node19 10
+Node8 Node25 4
+Node18 Node29 7
+Node21 Node27 1
+Node28 Node2 9
+Node8 Node21 6
+Node18 Node19 2
+Node9 Node11 8
+Node8 Node27 9
+Node25 Node17 4
+Node29 Node9 10
+Node5 Node6 1
+Node11 Node23 2
+
