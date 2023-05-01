@@ -8,7 +8,7 @@ public class GraphExperiment{
         File currentDir = new File(".");
         File dataDir = new File(currentDir.getParent(), "data");
         
-        for (int i = 1; i < 26; i++) {
+        for (int i = 1; i < 51; i++) {
             String filename = "Dataset" + i + ".txt";
             String filePath = new File(dataDir, filename).getAbsolutePath();
             Graph.main(new String[] { filePath });
