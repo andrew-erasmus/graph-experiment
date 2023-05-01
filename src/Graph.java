@@ -1,3 +1,7 @@
+// Program to generate a graph data structure, run Dijkstra's algorithm and get the number of operations when finding the shortest path.
+// Andrew Erasmus
+// 01/05/2023
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -46,6 +50,10 @@ public class Graph
 
     /**
      * Add a new edge to the graph.
+     * @param sourceName the name of the source vertex
+     * @param destName the name of the destination vertex
+     * @param cost the cost of the edge from source to destination
+     * 
      */
     public void addEdge( String sourceName, String destName, double cost )
     {
@@ -58,6 +66,7 @@ public class Graph
      * Driver routine to handle unreachables and print total cost.
      * It calls recursive routine to print shortest path to
      * destNode after a shortest path algorithm has run.
+     * @param destName the name of the destination vertex
      */
     public void printPath( String destName )
     {
@@ -77,6 +86,7 @@ public class Graph
     /**
      * If vertexName is not present, add it to vertexMap.
      * In either case, return the Vertex.
+     * @param vertexName the name of the vertex to be returned
      */
     private Vertex getVertex( String vertexName )
     {
@@ -93,6 +103,7 @@ public class Graph
      * Recursive routine to print shortest path to dest
      * after running shortest path algorithm. The path
      * is known to exist.
+     * @param dest the destination vertex
      */
     private void printPath( Vertex dest )
     {
@@ -114,40 +125,11 @@ public class Graph
             v.reset( );
     }
 
-    /**
-     * Single-source unweighted shortest-path algorithm.
-     */
-    public void unweighted( String startName )
-    {
-        clearAll( ); 
-
-        Vertex start = vertexMap.get( startName );
-        if( start == null )
-            throw new NoSuchElementException( "Start vertex not found" );
-
-        Queue<Vertex> q = new LinkedList<Vertex>( );
-        q.add( start ); start.dist = 0;
-
-        while( !q.isEmpty( ) )
-        {
-            Vertex v = q.remove( );
-
-            for( Edge e : v.adj )
-            {
-                Vertex w = e.dest;
-                if( w.dist == INFINITY )
-                {
-                    w.dist = v.dist + 1;
-                    w.prev = v;
-                    q.add( w );
-                }
-            }
-        }
-    }
 
     /**
      * Single-source weighted shortest-path algorithm. (Dijkstra) 
      * using priority queues based on the binary heap
+     * @param startName the name of the vertex to start with
      */
     public void dijkstra( String startName )
     {
@@ -200,6 +182,9 @@ public class Graph
    
     /**
      * Process a request; return false if end of file.
+     * @param inSource the name of the source vertex 
+     * @param inDest the name of the destination vertex
+     * @param g the graph data structure being processed
      */
     public static boolean processRequest( String inSource, String inDest, Graph g )
     {
@@ -224,10 +209,11 @@ public class Graph
      * A main routine that:
      * 1. Reads a file containing edges (supplied as a command-line parameter);
      * 2. Forms the graph;
-     * 3. Repeatedly prompts for two vertices and
-     *    runs the shortest path algorithm.
+     * 3. Runs dijkstra's algorithm to count the number of operations 
+     * 4. Write the results to a file called results.txt
      * The data file is a sequence of lines of the format
      *    source destination cost
+     * @param args
      */
     public static void main( String [ ] args )
     {
