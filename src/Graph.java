@@ -7,16 +7,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Queue;
 import java.util.Map;
-import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.PriorityQueue;
@@ -46,7 +41,7 @@ public class Graph
 {
     public static final double INFINITY = Double.MAX_VALUE;
     private Map<String,Vertex> vertexMap = new HashMap<String,Vertex>( );
-    public static int opCount = 0;
+    public static int totalOperations=0;
 
     /**
      * Add a new edge to the graph.
@@ -133,6 +128,9 @@ public class Graph
      */
     public void dijkstra( String startName )
     {
+        int opCountV = 0;
+        int opCountE = 0;
+        int opCountPQ = 0;
         PriorityQueue<Path> pq = new PriorityQueue<Path>( );
 
         Vertex start = vertexMap.get( startName );
@@ -145,7 +143,7 @@ public class Graph
         int nodesSeen = 0;
         while( !pq.isEmpty( ) && nodesSeen < vertexMap.size( ) )
         {
-            opCount += (int)Math.log(pq.size())/Math.log(2);
+            opCountPQ += (int)(Math.log(pq.size())/Math.log(2));
             Path vrec = pq.remove( );
             Vertex v = vrec.dest;
             
@@ -154,7 +152,8 @@ public class Graph
               
                 
             // vertex is being processed
-            opCount++;
+            opCountV++;
+
             v.scratch = 1;
             nodesSeen++;
 
@@ -166,17 +165,18 @@ public class Graph
                 if( cvw < 0 )
                     throw new GraphException( "Graph has negative edges" );
                     
-                //edge is being processed
-                opCount++;    
+                //edge is being processed   
+                opCountE++; 
                 if( w.dist > v.dist + cvw ) 
                 {
                     w.dist = v.dist +cvw;
                     w.prev = v;
                     pq.add( new Path( w, w.dist ) );
-                    opCount += (int)Math.log(pq.size())/Math.log(2);
+                    opCountPQ += (int)(Math.log(pq.size())/Math.log(2));
                 }
             }
         }
+        totalOperations=(opCountE+opCountV+opCountPQ);
     }
 
    
@@ -186,17 +186,13 @@ public class Graph
      * @param inDest the name of the destination vertex
      * @param g the graph data structure being processed
      */
-    public static boolean processRequest( String inSource, String inDest, Graph g )
+    public static boolean processRequest( String inSource, Graph g )
     {
         try
         {
             String startName = inSource;
-            String destName = inDest;
             g.dijkstra( startName );
-            g.printPath( destName );
-            System.out.println("Number of operations: "+opCount);
-                    
-            //g.printPath( destName );
+            System.out.println("Number of operations: "+(totalOperations));
         }
         catch( NoSuchElementException e )
           { return false; }
@@ -219,7 +215,6 @@ public class Graph
     {
         Graph g = new Graph( );
         String sourceNode="";
-        String destNode="";
         int lineCount=0;
         try
         {   	
@@ -233,7 +228,7 @@ public class Graph
             String nodes = firstLine.nextLine();
             String[] splitLine = nodes.split(" ");
             sourceNode=splitLine[0];
-            destNode=splitLine[1];
+           
             
 
             while( graphFile.hasNextLine( ) )
@@ -267,14 +262,15 @@ public class Graph
 
          //get the first edge of the file to be the source and destination node to calculate shortest distances
          // edits the program so that there is no user input
-         processRequest(sourceNode, destNode, g );
+         processRequest(sourceNode, g );
+
          try{
             File currentDir = new File(".");
             File dataDir = new File(currentDir.getParent(), "data");
             File outputFile = new File(dataDir, "results.txt");
             
             PrintWriter output = new PrintWriter(new FileWriter(outputFile.getAbsolutePath(), true));
-            output.println(g.vertexMap.size() + " " + (lineCount - 1) + " " + opCount);
+            output.println(g.vertexMap.size() + " " + (lineCount - 1) + " " +(totalOperations));
             output.close();
          }catch(IOException e){
             e.printStackTrace();
