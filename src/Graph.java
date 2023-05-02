@@ -9,7 +9,6 @@
  */
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.PrintWriter;
 import java.io.IOException;
 import java.util.Map;
 import java.util.HashMap;
@@ -18,6 +17,7 @@ import java.util.PriorityQueue;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 import java.io.File;
+import java.io.BufferedWriter;
 
 
 // Graph class: evaluate shortest paths.
@@ -41,6 +41,9 @@ public class Graph
 {
     public static final double INFINITY = Double.MAX_VALUE;
     private Map<String,Vertex> vertexMap = new HashMap<String,Vertex>( );
+    public static int vCount=0;
+    public static int eCount=0;
+    public static int pqCount=0;
     public static int totalOperations=0;
 
     /**
@@ -176,6 +179,9 @@ public class Graph
                 }
             }
         }
+        vCount=opCountV;
+        eCount=opCountE;
+        pqCount=opCountPQ;
         totalOperations=(opCountE+opCountV+opCountPQ);
     }
 
@@ -252,7 +258,8 @@ public class Graph
                 catch( NumberFormatException e )
                   { System.err.println( "Skipping ill-formatted line " + line ); }
              }
-
+             graphFile.close();
+             firstLine.close();
          }
          catch( IOException e )
            { System.err.println( e ); }
@@ -267,11 +274,18 @@ public class Graph
          try{
             File currentDir = new File(".");
             File dataDir = new File(currentDir.getParent(), "data");
-            File outputFile = new File(dataDir, "results.txt");
-            
-            PrintWriter output = new PrintWriter(new FileWriter(outputFile.getAbsolutePath(), true));
-            output.println(g.vertexMap.size() + " " + (lineCount - 1) + " " +(totalOperations));
-            output.close();
+            File outputFile = new File(dataDir, "results.csv");
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile.getAbsolutePath(),true));
+
+            //int e=lineCount-1;
+            //int v=g.vertexMap.size();
+            //int bound = (int)(Math.log(Math.abs(e)) + Math.log(v) / Math.log(2));
+            // Write data
+            writer.write(g.vertexMap.size()+", "+(lineCount - 1)+", "+vCount+", "+eCount+", "+pqCount+", "+totalOperations/*+", "+bound*/);
+            writer.newLine();
+            // Close the writer
+            writer.close();
          }catch(IOException e){
             e.printStackTrace();
          }

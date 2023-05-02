@@ -4,6 +4,9 @@
 
 import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 public class GraphExperiment{
 
     /**
@@ -13,23 +16,30 @@ public class GraphExperiment{
     public static void main(String[] args) throws IOException, InterruptedException{
                    
 
-        File currentDir = new File(".");
-        File dataDir = new File(currentDir.getParent(), "data");
         
-        for (int i = 1; i < 26; i++) {
-            String filename = "Dataset" + i + ".txt";    
-            String filePath = new File(dataDir, filename).getAbsolutePath();
-            Graph.main(new String[] { filePath });
-        }
+        
+        try{
+            File currentDir = new File(".");
+            File dataDir = new File(currentDir.getParent(), "data");
+            File outputFile = new File(dataDir, "results.csv");
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile.getAbsolutePath(),false));
+
             
+            writer.write("NumV, NumE, vCount, eCount, pqCount, totalOperations, |E|log|V|");
+            writer.newLine();
+
+            writer.close();
+
+            for (int i = 1; i < 26; i++) {
+                String filename = "Dataset" + i + ".txt";    
+                String filePath = new File(dataDir, filename).getAbsolutePath();
+                Graph.main(new String[] { filePath });
+            }
+        }catch(IOException e){
+            e.printStackTrace();
+        }            
     }
-
-    
-    // public void createGraph(){
-
-    // }
-
-    
 }
 
 
