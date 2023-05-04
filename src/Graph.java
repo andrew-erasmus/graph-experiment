@@ -7,10 +7,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Queue;
 import java.util.Map;
+import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.PriorityQueue;
@@ -131,9 +136,10 @@ public class Graph
      */
     public void dijkstra( String startName )
     {
-        int opCountV = 0;
-        int opCountE = 0;
-        int opCountPQ = 0;
+        int opCountE=0;
+        int opCountV=0;
+        int opCountPQ=0;
+        
         PriorityQueue<Path> pq = new PriorityQueue<Path>( );
 
         Vertex start = vertexMap.get( startName );
@@ -146,7 +152,7 @@ public class Graph
         int nodesSeen = 0;
         while( !pq.isEmpty( ) && nodesSeen < vertexMap.size( ) )
         {
-            opCountPQ += (int)(Math.log(pq.size())/Math.log(2));
+            opCountPQ += (int)Math.log(pq.size())/Math.log(2);
             Path vrec = pq.remove( );
             Vertex v = vrec.dest;
             
@@ -156,7 +162,6 @@ public class Graph
                 
             // vertex is being processed
             opCountV++;
-
             v.scratch = 1;
             nodesSeen++;
 
@@ -168,14 +173,14 @@ public class Graph
                 if( cvw < 0 )
                     throw new GraphException( "Graph has negative edges" );
                     
-                //edge is being processed   
-                opCountE++; 
+                //edge is being processed
+                opCountE++;    
                 if( w.dist > v.dist + cvw ) 
                 {
                     w.dist = v.dist +cvw;
                     w.prev = v;
                     pq.add( new Path( w, w.dist ) );
-                    opCountPQ += (int)(Math.log(pq.size())/Math.log(2));
+                    opCountPQ += (int)Math.log(pq.size())/Math.log(2);
                 }
             }
         }
@@ -192,13 +197,17 @@ public class Graph
      * @param inDest the name of the destination vertex
      * @param g the graph data structure being processed
      */
-    public static boolean processRequest( String inSource, Graph g )
+    public static boolean processRequest( String inSource, String inDest, Graph g )
     {
         try
         {
             String startName = inSource;
+            String destName = inDest;
             g.dijkstra( startName );
-            System.out.println("Number of operations: "+(totalOperations));
+            g.printPath( destName );
+            System.out.println("Number of operations: "+totalOperations);
+                    
+            //g.printPath( destName );
         }
         catch( NoSuchElementException e )
           { return false; }
@@ -221,6 +230,7 @@ public class Graph
     {
         Graph g = new Graph( );
         String sourceNode="";
+        String destNode="";
         int lineCount=0;
         try
         {   	
@@ -234,7 +244,7 @@ public class Graph
             String nodes = firstLine.nextLine();
             String[] splitLine = nodes.split(" ");
             sourceNode=splitLine[0];
-           
+            destNode=splitLine[1];
             
 
             while( graphFile.hasNextLine( ) )
@@ -269,8 +279,7 @@ public class Graph
 
          //get the first edge of the file to be the source and destination node to calculate shortest distances
          // edits the program so that there is no user input
-         processRequest(sourceNode, g );
-
+         processRequest(sourceNode, destNode, g );
          try{
             File currentDir = new File(".");
             File dataDir = new File(currentDir.getParent(), "data");

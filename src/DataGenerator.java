@@ -21,7 +21,8 @@ public class DataGenerator {
      * @param args The arguements from the user's inputs
      */
     public static void main(String[] args) {
-
+        int[] vertexArr = {10,20,30,40,50};
+        int[] edgeArr = {20,35,50,65,80,80,140,200,260,320,180,315,450,585,720,320,560,800,1080,1280,500,875,1250,1625,2000};
         try {
             Scanner input = new Scanner(System.in);
             System.out.print("Enter a filename: ");

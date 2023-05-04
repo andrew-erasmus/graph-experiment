@@ -16,8 +16,7 @@ public class GraphExperiment{
     public static void main(String[] args) throws IOException, InterruptedException{
                    
 
-        
-        
+    
         try{
             File currentDir = new File(".");
             File dataDir = new File(currentDir.getParent(), "data");
