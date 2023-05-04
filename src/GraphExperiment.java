@@ -26,7 +26,7 @@ public class GraphExperiment{
             BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile.getAbsolutePath(),false));
 
             
-            writer.write("NumV, NumE, vCount, eCount, pqCount, totalOperations, |E|log|V|");
+            writer.write("NumV, NumE, vCount, eCount, pqCount, totalOperations");
             writer.newLine();
 
             writer.close();
@@ -42,20 +42,5 @@ public class GraphExperiment{
     }
 }
 
-
-    /*
-     * HOW TO DO ASSIGNMENT
-     * 
-     * Theoretical bound in performance - see if stays within bound
-     * 
-     * Number of vertices is not the same as vCount since some are not even dealt with since have no edges
-     * Priority queue - logN operations
-     * Instrumentation - counters
-     * After plot - do we need to count vertex and edge operations
-     * Maybe count number of comparisons
-     * 
-     * If increase number of datasets - get better data ()
-     * 
-     */
 
 
